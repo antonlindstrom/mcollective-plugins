@@ -20,8 +20,6 @@ module MCollective
       end
 
       action "threshold" do
-        validate :tvalue, Integer
-
         threshold(scan, request[:tvalue])
       end
     
@@ -54,38 +52,47 @@ module MCollective
 
       def internal(scanned)
         logger.debug("Listing internal failed login attempts")
-        array_out = Array.new
+        array_ip = Array.new
+        array_c  = Array.new
 
         scanned.each_pair do |ip,count|
           if rfc1918?(ip)
-            array_out << "#{ip}:#{count}"
+            array_ip << ip
+            array_c  << count
           end
         end
-        reply[:output] = array_out.join("-")
+        reply[:num_attempts] = array_c
+        reply[:ip] = array_ip
        end
 
       def external(scanned)
         logger.debug("Listing external failed login attempts")
-        array_out = Array.new
+        array_ip = Array.new
+        array_c  = Array.new
 
         scanned.each_pair do |ip,count|
-          #unless rfc1918?(ip)
-            array_out << "#{ip}:#{count}"
-          #end
+          unless rfc1918?(ip)
+            array_ip << ip
+            array_c  << count
+          end
         end
-        reply[:output] = array_out.join("-")
+        reply[:num_attempts] = array_c
+        reply[:ip] = array_ip
       end
 
       def threshold(scanned, threshold)
         logger.debug("Listing failed login attempts with threshold over #{threshold}")
-        array_out = Array.new
+        array_ip = Array.new
+        array_c  = Array.new
 
         scanned.each_pair do |ip,count|
-          if count < threshold
-            array_out << "#{ip}:#{count}"
+          if count < threshold.to_i
+            array_ip << ip
+            array_c  << count
           end
         end
-        reply[:output] = array_out.join("-")
+        reply[:num_attempts] = array_c
+        reply[:ip] = array_ip
       end
 
       def rfc1918?(ip)
