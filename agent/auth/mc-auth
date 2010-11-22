@@ -1,0 +1,45 @@
+#!/usr/bin/env ruby
+
+# http://antonlindstrom.com
+# http://github.com/antonlindstrom
+
+require 'mcollective'
+
+include MCollective::RPC
+
+auth = rpcclient("auth")
+
+if ARGV.length == 2
+    action = ARGV.shift
+    tvalue = ARGV.shift
+
+    unless action =~ /^threshold$/
+        puts("The action has to be threshold, and requires a threshold value.")
+        exit! 1
+    end
+elsif ARGV.length == 1
+    action = ARGV.shift
+
+    unless action =~ /^internal|external$/
+        puts("The action does not match internal or external.")
+        exit! 1
+    end
+else 
+    puts("Please specify an action internal, external or threshold [num]")
+    exit 1
+end
+
+if action =~ /^internal|external|threshold$/
+  auth.send(action, {:tvalue => "#{tvalue}"}).each do |node|
+    unless node[:statuscode] == 1
+        next if node[:data][:ip].nil?
+        unless node[:data][:ip].length < 1
+          printf("%-40s %s\n", node[:sender], node[:statusmsg])
+          hash = Hash[node[:data][:ip].zip(node[:data][:num_attempts])]
+          hash.each_pair { |k,v| printf("\t%-20s %s\n", k, v) }
+        end
+    end
+  end
+end
+
+printrpcstats
