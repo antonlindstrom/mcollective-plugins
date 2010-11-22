@@ -9,8 +9,8 @@ metadata    :name        => "SimpleRPC Scan Auth.log Agent",
 
 ["internal", "external"].each do |act|
     action act, :description => "List invalid authentication attempts for #{act} IPs" do
-    display :always
-        
+    display :ok
+
     output :ip,
            :description => "List of IPs that have tried to scan",
            :display_as  => "IP Address"
@@ -21,7 +21,7 @@ metadata    :name        => "SimpleRPC Scan Auth.log Agent",
 end
 
 action "threshold", :description => "List IPs that have reached a failed attempt number of [value]" do
-    display :always
+    display :ok
 
     input :tvalue, 
           :prompt      => "Threshold value",

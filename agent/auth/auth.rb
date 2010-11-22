@@ -61,8 +61,8 @@ module MCollective
             array_c  << count
           end
         end
-        reply[:num_attempts] = array_c
-        reply[:ip] = array_ip
+        reply[:num_attempts] = array_c if array_c.length > 0
+        reply[:ip] = array_ip if array_ip.length > 0
        end
 
       def external(scanned)
@@ -76,8 +76,8 @@ module MCollective
             array_c  << count
           end
         end
-        reply[:num_attempts] = array_c
-        reply[:ip] = array_ip
+        reply[:num_attempts] = array_c if array_c.length > 0
+        reply[:ip] = array_ip if array_ip.length > 0
       end
 
       def threshold(scanned, threshold)
@@ -86,13 +86,13 @@ module MCollective
         array_c  = Array.new
 
         scanned.each_pair do |ip,count|
-          if count < threshold.to_i
+          if count > threshold.to_i
             array_ip << ip
             array_c  << count
           end
         end
-        reply[:num_attempts] = array_c
-        reply[:ip] = array_ip
+        reply[:num_attempts] = array_c if array_c.length > 0
+        reply[:ip] = array_ip if array_ip.length > 0
       end
 
       def rfc1918?(ip)
