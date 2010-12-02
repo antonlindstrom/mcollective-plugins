@@ -36,7 +36,7 @@ if action =~ /^internal|external|threshold$/
         unless node[:data][:ip].length < 1
           printf("%-40s %s\n", node[:sender], node[:statusmsg])
           hash = Hash[node[:data][:ip].zip(node[:data][:num_attempts])]
-          hash.each_pair { |k,v| printf("\t%-20s %s\n", k, v) }
+          hash.sort{|a,b| a[1]<=>b[1]}.each { |k,v| printf("\t%-20s %s\n", k, v) }
         end
     end
   end
